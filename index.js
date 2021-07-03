@@ -1,15 +1,15 @@
 const express = require("express");
-
 const ffmpeg = require("fluent-ffmpeg");
-
 const bodyParser = require("body-parser");
-
 const fs = require("fs");
-
 const fileUpload = require("express-fileupload");
+const cors = require('cors')
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:3000'
+}))
 const PORT = process.env.PORT || 5000
 
 // parse application/x-www-form-urlencoded
@@ -33,8 +33,6 @@ ffmpeg.setFfprobePath("C:/ffmpeg/bin");
 
 ffmpeg.setFlvtoolPath("C:/flvtool");
 
-console.log(ffmpeg);
-
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
@@ -42,12 +40,11 @@ app.get("/", (req, res) => {
 app.post("/convert", (req, res) => {
   //res.contentType(`video/${to}`);
   //res.attachment(`output.${to}`
-
   let { to, vdoCode, bitrate, scale } = req.body;
   let file = req.files.file;
   let fileName = `${file.name.replace(/\.[^/.]+$/, "")}.${to}`;
-  console.log(to);
   console.log(file);
+  console.log(req)
 
   file.mv("tmp/" + file.name, function (err) {
     if (err) return res.sendStatus(500).send(err);
